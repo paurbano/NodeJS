@@ -5,39 +5,42 @@ const dboper = require('./operations');
 const url = 'mongodb://localhost:27017/';
 const dbname = 'conFusion';
 
-/** updated to fix callback hell and use promises */
-MongoClient.connect(url).then((client) => {
+/** callback nested*/
+
+// second parameter is a callback function
+MongoClient.connect(url, (err, client) => {
+    // the assert function allows to perform various checks on values
+    assert.equal(err,null);
 
     console.log('Connected correctly to server');
+
     const db = client.db(dbname);
+    const collection = db.collection("dishes");
+    // callback to insert a document
+    collection.insertOne({"name": "Uthappizza", "description": "test"}, (err, result) => {
+        //if the result is obtained in callback, then
+        // we are able to access the collection and then perform further operations.
+        assert.equal(err,null);
 
-    dboper.insertDocument(db, {name: "pataconera", description: "todo en patacones"}, 'dishes')
-    .then((result) =>{
-        console.log("Insert Document:\n", result.ops);
+        console.log("After Insert:\n");
+        // result will also provide this OPS property which says how many operations have just been carried out successfully.
+        console.log(result.ops);
+        // second callback inside the first one to find all documents in a collection
+        collection.find({}).toArray((err, docs) => {
+            assert.equal(err,null);
+            
+            console.log("Found:\n");
+            // here docs will return all the documents from this collection that match whatever criteria that you specify here.
+            // since this is empty return all documents
+            console.log(docs);
+            // third callback inside find to drop a collection in this case
+            // dishes
+            db.dropCollection("dishes", (err, result) => {
+                assert.equal(err,null);
 
-        return dboper.findDocuments(db, "dishes");
-    })
-    .then((docs) => {
-            console.log("Found Documents:", docs);
+                client.close();
+            });
+        });
+    });
 
-            return dboper.updateDocument(db, {name:"pataconera"}, 
-                        {description: "patacones y mas.."}, "dishes");
-    })
-    .then((result) =>{
-            console.log("Updates Document:\n", result.result);
-
-            return  dboper.findDocuments(db, "dishes");
-    })
-    .then((docs) => {
-            console.log("Found Documents:", docs);
-
-            return  db.dropCollection("dishes");
-    })
-    .then((result) => {
-            console.log("Droped Collection: ", result);
-
-            return client.close();
-    })
-    .catch((err) => console.log(err));
-})
-.catch((err) => console.log(err));
+});
