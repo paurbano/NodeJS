@@ -5,8 +5,6 @@ const dboper = require('./operations');
 const url = 'mongodb://localhost:27017/';
 const dbname = 'conFusion';
 
-/** callback nested*/
-
 // second parameter is a callback function
 MongoClient.connect(url, (err, client) => {
     // the assert function allows to perform various checks on values
@@ -15,32 +13,30 @@ MongoClient.connect(url, (err, client) => {
     console.log('Connected correctly to server');
 
     const db = client.db(dbname);
-    const collection = db.collection("dishes");
-    // callback to insert a document
-    collection.insertOne({"name": "Uthappizza", "description": "test"}, (err, result) => {
-        //if the result is obtained in callback, then
-        // we are able to access the collection and then perform further operations.
-        assert.equal(err,null);
-
-        console.log("After Insert:\n");
-        // result will also provide this OPS property which says how many operations have just been carried out successfully.
-        console.log(result.ops);
-        // second callback inside the first one to find all documents in a collection
-        collection.find({}).toArray((err, docs) => {
-            assert.equal(err,null);
+    // use of the module functions from operations
+    dboper.insertDocument(db, {name:'tostada con pollo', description:'test dish'}, 'dishes', (result) => { 
+        // the ops tells the number of insert operations made it
+        console.log('Insert document:\n', result.ops);
+        // once the previous operations is completed, look for documents and print it
+        dboper.findDocuments(db, 'dishes', (docs) => {
+            console.log('Found documents:\n', docs);
             
-            console.log("Found:\n");
-            // here docs will return all the documents from this collection that match whatever criteria that you specify here.
-            // since this is empty return all documents
-            console.log(docs);
-            // third callback inside find to drop a collection in this case
-            // dishes
-            db.dropCollection("dishes", (err, result) => {
-                assert.equal(err,null);
+            // and once show inserted documents, update the last one
+            dboper.updateDocument(db,{name: 'tostada con pollo'},{description:'updated test'},'dishes', (result) =>{
+                console.log('Updated Document:\n', result.result);
 
-                client.close();
+                // agian search for the docs and print it
+                dboper.findDocuments(db, 'dishes', (docs) => {
+                    console.log('Found documents:\n', docs);
+
+                    //drop the collection, leave the database clean
+                    db.dropCollection('dishes', (result) => {
+                        console.log('Dropped Collections:\n', result);
+                        // close connection
+                        client.close();
+                    });
+                });
             });
         });
     });
-
 });
