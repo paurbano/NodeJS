@@ -38,7 +38,7 @@ const dishSchema = new Schema({
 },
 // add automatically two fields to the document by mongo when create it, 
 // created and updated, 
-// and updated automatically when modifi document
+// and updated automatically when modify document
 {
     timestamps : true
 });
