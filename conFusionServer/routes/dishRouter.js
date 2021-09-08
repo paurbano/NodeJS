@@ -112,12 +112,15 @@ dishRouter.route('/:dishId')
 dishRouter.route('/:dishId/comments')
 .options(cors.corsWithOptions, (req,res) => {res.sendStatus(200); })
 .get(cors.cors, (req, res, next) => {
+    //find a dish by Id send it in the body request
     Dishes.findById(req.params.dishId)
     // added for moongose population
     .populate('comments.author')
     .then((dish) => {
+        // verify if the dish is not null (exist)
         if (dish != null)
         {
+            // return the comments
             res.statusCode = 200;
             res.setHeader('Content-Type', 'application/json');
             res.json(dish.comments);
@@ -175,6 +178,7 @@ dishRouter.route('/:dishId/comments')
 .delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Dishes.findById(req.params.dishId)
     .then((dish) => {
+        // if dish exist delete all comments
         if (dish != null)
         {
             // delete all comments and
@@ -192,7 +196,7 @@ dishRouter.route('/:dishId/comments')
                 res.json(dish);
             }, (err) => next(err));
         }
-        else
+        else // return an error if not
         {
             err = new Error('Dish ' + req.params.dishId + ' not Found');
             err.status = 404;
