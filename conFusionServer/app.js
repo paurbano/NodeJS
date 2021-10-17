@@ -19,6 +19,8 @@ var promotionRouter = require('./routes/promoRouter');
 var leaderRouter = require('./routes/leaderRouter');
 // week 4: uploading file
 var uploadRouter = require('./routes/uploadRouter');
+// week 4 assignment: task 3
+var favoriteRouter = require('./routes/favoriteRouter');
 
 const mongoose = require('mongoose');
 
@@ -31,7 +33,7 @@ const connect = mongoose.connect(url);
 var app = express();
 
 connect.then((db) => {
-  console.log('Connected to Server');
+  console.log('Connected to Mongo Server');
 }, (err) => {console.log(err); });
 
 // week 4: https
@@ -115,8 +117,11 @@ app.use('/users', usersRouter);
 app.use('/dishes', dishesRouter);
 app.use('/promotions', promotionRouter);
 app.use('/leaders', leaderRouter);
+//week 4 assignment: task 3
+app.use('/favorites', favoriteRouter);
 //week 4: uploading files
 app.use('/imageUpload', uploadRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

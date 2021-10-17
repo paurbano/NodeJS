@@ -12,7 +12,9 @@ var passportlocalMongoose = require('passport-local-mongoose');
 
 //define the model
 var User = new Schema({
-    /* comment for authentication with passport
+    /* comment for authentication with passport, 
+    added automaticaly by passport-local-mongoose
+
     username : {
         type: String,
         required: true,
@@ -40,7 +42,8 @@ var User = new Schema({
         default: false
     }
 });
-//add support for model storage
+//this is what add the username, password hashed and 
+//additional methods to the user schema for passport authentication
 User.plugin(passportlocalMongoose);
 
 // export model

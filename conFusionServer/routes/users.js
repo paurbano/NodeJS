@@ -58,9 +58,11 @@ router.post('/signup',cors.corsWithOptions,  function(req, res, next) {
   
   // modifications for passport
   // use passport authentication
-  User.register(new User({username: req.body.username}),
-    req.body.password, (err, user) => {
+  // passport use 'register' method to create a new user
+  // pass the username and password from the body of the message
+  User.register(new User({username: req.body.username}), req.body.password, (err, user) => {
     //if (user != null)
+    /**there was an error on registration process */
     if (err)
     {
       /* 
@@ -90,10 +92,11 @@ router.post('/signup',cors.corsWithOptions,  function(req, res, next) {
           return ;
         }
       //
+      /**register user */
         passport.authenticate('local')(req,res,() => {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json({success: true, status: 'Registrarion Successful!'});
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({success: true, status: 'Registrarion Successful!'});
         });
       });
     }
@@ -109,7 +112,7 @@ router.post('/signup',cors.corsWithOptions,  function(req, res, next) {
 });
 
 //login the user
-router.post('/login',cors.corsWithOptions,  passport.authenticate('local'), (req, res) =>{
+router.post('/login',cors.corsWithOptions, passport.authenticate('local'), (req, res) =>{
   var token = authenticate.getToken({_id: req.user._id});
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json');

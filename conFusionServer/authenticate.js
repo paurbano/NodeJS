@@ -24,8 +24,11 @@ var FacebookTokenStrategy = require('passport-facebook-token');
 var config =  require('./config.js');
 
 // this is where passport libraries help
+// here is where incoming request verify user with local strategy
 // extract username and password from request inside body messagge
 exports.local = passport.use(new LocalStrategy(User.authenticate()));
+
+//also if still use sessions on application, passport support it
 //by using sessions must serialize and deserialize user info
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());

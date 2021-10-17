@@ -155,8 +155,7 @@ dishRouter.route('/:dishId/comments')
                     res.statusCode = 200;
                     res.setHeader('Content-Type', 'application/json');
                     res.json(dish.comments);
-                })
-                
+                })    
             }, (err) => next(err));
         }
         else

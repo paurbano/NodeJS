@@ -44,7 +44,7 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 secureServer.listen(app.get('secPort'), () =>{
-  console.log('Secure server listening on port: ', app.get('secPort'));
+  console.log('Secure server listening on port: ', app.get('secPort'), 'https://localhost:' + app.get('secPort'));
 });
 secureServer.on('error', onError);
 secureServer.on('listening', onListening);
